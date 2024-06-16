@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import userRouter from 'router/user';
+import userRouter from './router/user';
 
 const { PORT = 5050, BASE_PATH = 'none' } = process.env;
 const app = express();

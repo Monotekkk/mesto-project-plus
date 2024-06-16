@@ -5,6 +5,7 @@ interface User {
   about: string;
   avatar: string;
 }
+
 const userSchema = new mongoose.Schema<User>({
   name: {
     type: String,
