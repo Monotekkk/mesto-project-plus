@@ -13,5 +13,8 @@ const userSchema = new mongoose.Schema<User>({
     minlength: 2,
     maxlength: 30,
   },
+  about:{
+    
+  }
 });
 export default mongoose.model<User>('user', userSchema);
