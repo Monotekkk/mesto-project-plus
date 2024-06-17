@@ -1,4 +1,4 @@
-import {Response, Request} from 'express';
+import { Response, Request } from 'express';
 import User from '../models/user';
 
 export const getUsers = (req: Request, res: Response) => {
