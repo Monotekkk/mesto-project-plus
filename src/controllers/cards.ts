@@ -28,3 +28,17 @@ export const deleteCards = (req: Request, res: Response) => {
     res.send({ result });
   });
 };
+export const likeCard = (req: Request, res: Response) => {
+  Card.findByIdAndUpdate(req.params._id, {
+    $addToSet: { likes: req.body.user._id },
+  }, { new: true }).then((result) => {
+    res.send({ result });
+  });
+};
+export const dislikeCard = (req: Request, res: Response) => {
+  Card.findByIdAndUpdate(req.params._id, {
+    $pull: { likes: req.body.user._id },
+  }, { new: true }).then((result) => {
+    res.send({ result });
+  });
+};
