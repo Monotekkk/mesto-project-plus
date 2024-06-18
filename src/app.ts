@@ -11,12 +11,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use((req, res, next) => {
   req.body.user = {
-    _id: '5d8b8592978f8bd833ca8133',
+    _id: '66704f463f850696f61b3031',
   };
   next();
 });
 app.use('/users', userRouter);
-app.use('/users/:id', userRouter);
 app.use('/cards', cardRouter);
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
