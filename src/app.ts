@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import * as process from 'node:process';
 import userRouter from './router/user';
 import cardRouter from './router/cards';
-
 const { PORT = 3000, BASE_PATH = 'none' } = process.env;
 const app = express();
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -17,6 +16,7 @@ app.use((req, res, next) => {
 });
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
+app.use('*', (req, res) => { res.status(404).send('Страница не найдена'); });
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
   console.log(BASE_PATH);
