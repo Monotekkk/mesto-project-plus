@@ -16,7 +16,7 @@ export const getUserByID = (req: Request, res: Response) => {
       if (!user) {
         res.status(404).send('Ошибка 404: Пользователь по указанному _id не найден');
       }
-      res.status(201).send(user);
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -31,7 +31,7 @@ export const getUserByID = (req: Request, res: Response) => {
 export const createUser = (req: Request, res: Response) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar }).then((user) => {
-    res.send(user);
+    res.status(201).send(user);
   }).catch((err) => {
     if (err.name === 'CastError') {
       res.status(400).send('Ошибка 400: Переданы некорректные данные при создании пользователя');
