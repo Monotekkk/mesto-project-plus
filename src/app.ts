@@ -1,11 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import userRouter from './router/user';
 import cardRouter from './router/cards';
 import { createUser, login } from './controllers/users';
 import auth from './middlewares/auth';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
+
 const { PORT = 3000, BASE_PATH = 'none' } = process.env;
 const app = express();
 app.use(bodyParser.json());
