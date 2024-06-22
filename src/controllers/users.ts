@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
@@ -13,7 +13,7 @@ export const getUsers = (req: Request, res: Response) => {
     });
 };
 export const getUserByID = (req: Request, res: Response) => {
-  const _id = req.params.id === undefined ? req.body.user.id : req.params.id;
+   const _id = req.params.id;
   User.findById(_id)
     .then((user) => {
       if (!user) {
@@ -96,11 +96,10 @@ export const updateAvatar = (req: Request, res: Response) => {
 };
 export const login = (req: Request, res: Response) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
-        { id: user.id },
+        { _id: user._id },
         'super-strong-secret',
         { expiresIn: '7d' },
       );
@@ -117,6 +116,9 @@ export const login = (req: Request, res: Response) => {
       res.status(401).send({ message: err.message });
     });
 };
-export const getUserMe = (req:Request, res:Response)=>{
-  res.status(201).send(req.body);
-}
+export const getUser = (req: Request, res: Response, next:NextFunction) => {
+  User.findById(req.user._id)
+    .orFail(() => res.send('Пользователь не найден'))
+    .then((user) => res.send(user))
+    .catch(next);
+};
