@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/user';
 
 export const getUsers = (req: Request, res: Response) => {
@@ -92,3 +93,30 @@ export const updateAvatar = (req: Request, res: Response) => {
       }
     });
 };
+export const login = (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+
+
+      res.cookie('access-token', `Bearer ${token}`, {
+        maxAge: 1000 * 60 * 15,
+        httpOnly: true,
+        sameSite: 'strict',
+      });
+      res.status(201).send(token);
+      //res.status(201).send({ success: 'true' });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+export const getUser = (req: Request, res:Response) =>{
+ return getUsers(req, res);
+}

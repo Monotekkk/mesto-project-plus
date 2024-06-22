@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import Card from '../models/card';
 
 export const createCard = (req: Request, res: Response) => {
@@ -52,8 +52,8 @@ export const deleteCards = (req: Request, res: Response) => {
 };
 export const likeCard = (req: Request, res: Response) => {
   Card.findByIdAndUpdate(req.params.cardId, {
-    $addToSet: {likes: req.body.user._id},
-  }, {new: true})
+    $addToSet: { likes: req.body.user._id },
+  }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(404).send('Передан несуществующий _id карточки.');
@@ -63,7 +63,7 @@ export const likeCard = (req: Request, res: Response) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные для постановки лайка.')
+        res.status(400).send('Переданы некорректные данные для постановки лайка.');
       } else {
         res.status(500).send('Ошибка по умолчанию');
       }
@@ -71,8 +71,8 @@ export const likeCard = (req: Request, res: Response) => {
 };
 export const dislikeCard = (req: Request, res: Response) => {
   Card.findByIdAndUpdate(req.params.cardId, {
-    $pull: {likes: req.body.user._id},
-  }, {new: true})
+    $pull: { likes: req.body.user._id },
+  }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(404).send('Передан несуществующий _id карточки.');
@@ -82,7 +82,7 @@ export const dislikeCard = (req: Request, res: Response) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные для снятия лайка.')
+        res.status(400).send('Переданы некорректные данные для снятия лайка.');
       } else {
         res.status(500).send('Ошибка по умолчанию');
       }
