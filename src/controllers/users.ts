@@ -13,7 +13,8 @@ export const getUsers = (req: Request, res: Response) => {
     });
 };
 export const getUserByID = (req: Request, res: Response) => {
-  User.findById(req.params.id)
+  const _id = req.params.id === undefined ? req.body.user.id : req.params.id;
+  User.findById(_id)
     .then((user) => {
       if (!user) {
         res.status(404).send('Ошибка 404: Пользователь по указанному _id не найден');
@@ -22,7 +23,7 @@ export const getUserByID = (req: Request, res: Response) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send('Ошибка 400: Переданы некорректные данные при создании пользователя');
+        res.status(400).send('Ошибка 400: Переданы некорректные данные при получении пользователя');
       } else if (err.name === 'ValidationError') {
         res.status(400).send(err.message);
       } else {
@@ -99,24 +100,23 @@ export const login = (req: Request, res: Response) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
-        { _id: user._id },
-        'some-secret-key',
+        { id: user.id },
+        'super-strong-secret',
         { expiresIn: '7d' },
       );
-
 
       res.cookie('access-token', `Bearer ${token}`, {
         maxAge: 1000 * 60 * 15,
         httpOnly: true,
         sameSite: 'strict',
       });
-      res.status(201).send(token);
+      res.send({token})
       //res.status(201).send({ success: 'true' });
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
 };
-export const getUser = (req: Request, res:Response) =>{
- return getUsers(req, res);
+export const getUserMe = (req:Request, res:Response)=>{
+  res.status(201).send(req.body);
 }

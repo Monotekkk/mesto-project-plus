@@ -7,17 +7,15 @@ interface SessionRequest extends Request {
 
 const handleAuthError = (res: Response) => {
   res
-  .status(401)
-  .send({ message: 'Необходима авторизация' });
+    .status(401)
+    .send({ message: 'Необходима авторизация' });
 };
 
-const extractBearerToken = (header: string) => {
-  return header.replace('Bearer ', '');
-};
+const extractBearerToken = (header: string) => header.replace('Bearer ', '');
 
 const auth = (req: SessionRequest, res: Response, next: NextFunction) => {
-    const authorization = req.cookies['access-token'];
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  const authorization = req.cookies['access-token'];
+  if (!authorization) {
     return handleAuthError(res);
   }
 

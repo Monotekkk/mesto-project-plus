@@ -4,22 +4,20 @@ import userRouter from './router/user';
 import cardRouter from './router/cards';
 import { createUser, login } from './controllers/users';
 import auth from './middlewares/auth';
-
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 const { PORT = 3000, BASE_PATH = 'none' } = process.env;
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use((req, res, next) => {
-  req.body.user = {
-    _id: '66704f463f850696f61b3031',
-  };
-  next();
-});
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use('/users', userRouter);
-app.use('/cards', cardRouter);
+app.use('/users', auth, userRouter);
+app.use('/cards', auth, cardRouter);
 app.use('*', (req, res) => { res.status(404).send('Страница не найдена'); });
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
