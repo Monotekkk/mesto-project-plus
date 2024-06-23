@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import NotFoundError from '../errors/not-found-error';
+import BadRequestError from '../errors/bad-request-error';
+import ForbiddenError from '../errors/forbidden-error';
 import Card from '../models/card';
 
-export const createCard = (req: Request, res: Response) => {
+export const createCard = (req: Request, res: Response, next: NextFunction) => {
   const {
     name,
     link,
@@ -13,79 +16,55 @@ export const createCard = (req: Request, res: Response) => {
   })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные при создании карточки');
-      } else {
-        res.status(500).send('Ошибка по умолчанию');
-      }
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+      if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
     });
 };
 
-export const getCards = (req: Request, res: Response) => {
+export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find()
     .then((cards) => {
       res.send(cards);
     })
-    .catch(() => {
-      res.status(500).send('Ошибка по умолчанию');
-    });
+    .catch(next);
 };
 
-export const deleteCards = (req: Request, res: Response) => {
+export const deleteCards = (req: Request, res: Response, next: NextFunction) => {
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (!card) {
-        res.status(404).send('Карточка с указанным _id не найдена');
-      } else if (card.owner.toString() !== res.locals.user._id) {
-        res.status(401).send('Можно удалять только собственные карточки')
-      } else {
-        card.remove()
-          .then(() => res.send(card));
-      }
+      if (!card) return next(new NotFoundError('Карточка с указанным _id не найдена'));
+      if (card.owner.toString() !== res.locals.user._id) return next(new ForbiddenError('Можно удалять только собственные карточки'));
+      card.remove()
+        .then(() => res.send(card));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.send('Переданы некорректные данные.');
-      } else {
-        res.status(500).send('Ошибка по умолчанию');
-      }
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные'));
+      if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
     });
 };
-export const likeCard = (req: Request, res: Response) => {
+export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findByIdAndUpdate(req.params.cardId, {
     $addToSet: { likes: req.body.user._id },
   }, { new: true })
     .then((card) => {
-      if (!card) {
-        res.status(404).send('Передан несуществующий _id карточки.');
-      } else {
-        res.send(card);
-      }
+      if (!card) throw new NotFoundError('Передан несуществующий _id карточки.');
+      res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные для постановки лайка.');
-      } else {
-        res.status(500).send('Ошибка по умолчанию');
-      }
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
+      return next(err);
     });
 };
-export const dislikeCard = (req: Request, res: Response) => {
+export const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findByIdAndUpdate(req.params.cardId, {
     $pull: { likes: req.body.user._id },
   }, { new: true })
     .then((card) => {
-      if (!card) {
-        res.status(404).send('Передан несуществующий _id карточки.');
-      } else {
-        res.send(card);
-      }
+      if (!card) throw new NotFoundError('Передан несуществующий _id карточки.');
+      res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные для снятия лайка.');
-      } else {
-        res.status(500).send('Ошибка по умолчанию');
-      }
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
+      return next(err);
     });
 };
