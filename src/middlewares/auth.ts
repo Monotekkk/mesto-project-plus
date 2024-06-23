@@ -24,12 +24,10 @@ const auth = (req: SessionRequest, res: Response, next: NextFunction) => {
 
   try {
     payload = jwt.verify(token, 'super-strong-secret');
+    res.locals.user = payload;
+    next();
   } catch (err) {
     return handleAuthError(res);
   }
-
-  req.user = payload;
-
-  next();
 };
 export default auth;

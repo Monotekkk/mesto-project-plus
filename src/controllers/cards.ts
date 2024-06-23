@@ -5,12 +5,11 @@ export const createCard = (req: Request, res: Response) => {
   const {
     name,
     link,
-    user,
   } = req.body;
   Card.create({
     name,
     link,
-    owner: user._id,
+    owner: res.locals.user._id,
   })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
@@ -37,6 +36,8 @@ export const deleteCards = (req: Request, res: Response) => {
     .then((card) => {
       if (!card) {
         res.status(404).send('Карточка с указанным _id не найдена');
+      } else if (card.owner.toString() !== res.locals.user._id) {
+        res.status(401).send('Можно удалять только собственные карточки')
       } else {
         card.remove()
           .then(() => res.send(card));

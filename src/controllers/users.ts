@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from 'express';
+import { Response, Request } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
@@ -13,7 +13,7 @@ export const getUsers = (req: Request, res: Response) => {
     });
 };
 export const getUserByID = (req: Request, res: Response) => {
-  const _id = req.params.id;
+  const _id = req.params.id === undefined ? res.locals.user._id : req.params.id;
   User.findById(_id)
     .then((user) => {
       if (!user) {
@@ -109,15 +109,9 @@ export const login = (req: Request, res: Response) => {
         httpOnly: true,
         sameSite: 'strict',
       });
-      res.send({ token });
-      // res.status(201).send({ success: 'true' });
+      res.status(201).send({ success: 'true' });
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
-};
-export const getUser = (req: Request, res: Response) => {
-  User.findById(req.user._id)
-    .then((user) => res.send(user))
-    .catch((err) => res.status(404).send(err.message));
 };
