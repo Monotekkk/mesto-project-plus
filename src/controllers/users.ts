@@ -45,12 +45,11 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
   const {
     name, about,
   } = req.body;
-  User.findByIdAndUpdate(req.body.user._id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(res.locals.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      if (!user) throw new NotFoundError('Ошибка 404: Пользователь с указанным _id не найден');
-    })
-    .then((result) => {
-      res.send(result);
+      if (!user) {throw new NotFoundError('Ошибка 404: Пользователь с указанным _id не найден')} else {
+        res.send(user);
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') return next(new BadRequestError('Ошибка 400: Переданы некорректные данные при обновлении профиля'));
@@ -60,12 +59,11 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
 };
 export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.body.user._id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(res.locals.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if (!user) throw new NotFoundError('Ошибка 404: Пользователь с указанным _id не найден');
-    })
-    .then((result) => {
-      res.send(result);
+      if (!user) {throw new NotFoundError('Ошибка 404: Пользователь с указанным _id не найден')}else{
+        res.send(user);
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') return next(new BadRequestError('Ошибка 400: Переданы некорректные данные при обновлении профиля'));

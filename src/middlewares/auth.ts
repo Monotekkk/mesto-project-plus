@@ -1,23 +1,16 @@
+import UnAuthError from '../errors/un-auth-error';
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 interface SessionRequest extends Request {
-    user?: string | JwtPayload;
+  user?: string | JwtPayload;
 }
-
-const handleAuthError = (res: Response) => {
-  res
-    .status(401)
-    .send({ message: 'Необходима авторизация' });
-};
 
 const extractBearerToken = (header: string) => header.replace('Bearer ', '');
 
 const auth = (req: SessionRequest, res: Response, next: NextFunction) => {
   const authorization = req.cookies['access-token'];
-  if (!authorization) {
-    return handleAuthError(res);
-  }
+  if (!authorization) return next(new UnAuthError('Необходима авторизация'));
 
   const token = extractBearerToken(authorization);
   let payload;
@@ -27,7 +20,7 @@ const auth = (req: SessionRequest, res: Response, next: NextFunction) => {
     res.locals.user = payload;
     next();
   } catch (err) {
-    return handleAuthError(res);
+    return next(new UnAuthError('Необходима авторизация'));
   }
 };
 export default auth;
