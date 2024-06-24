@@ -3,6 +3,7 @@ import {
 } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { isEmail } from 'validator';
+import { isValidUrl } from '../validation/urlRegex';
 
 interface User {
   name: string;
@@ -30,6 +31,10 @@ const userSchema = new Schema<User>({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator:(url:string) => isValidUrl(url),
+      message: 'Ссылка не удовлетворяет условию'
+    }
   },
   email: {
     type: String,

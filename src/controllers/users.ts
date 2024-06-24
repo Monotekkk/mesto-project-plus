@@ -36,7 +36,6 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     })).then((user) => {
       res.status(201).send(user);
     }).catch((err) => {
-      if (err.name === 'CastError') return next(new BadRequestError('Ошибка 400: Переданы некорректные данные при создании пользователя'));
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
       if (err.code === 11000) return next(new ConflictError('Такой пользователь уже существует'));
     });
@@ -52,7 +51,6 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') return next(new BadRequestError('Ошибка 400: Переданы некорректные данные при обновлении профиля'));
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
       return next(err);
     });
@@ -89,7 +87,6 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       res.status(201).send({ success: 'true' });
     })
     .catch((err) => {
-      if (err.name === 'CastError') return next(new UnAuthError(err.message));
       return next(err);
     });
 };

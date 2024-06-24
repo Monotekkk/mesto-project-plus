@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
@@ -10,6 +10,7 @@ import { requestLogger, errorLogger } from './middlewares/logger';
 import auth from './middlewares/auth';
 import errorsMiddleware from './middlewares/errors';
 import { createUserValidator, loginValidator } from './validation/users';
+import notFoundRoute from './router/error';
 
 const { PORT = 3000, BASE_PATH = 'none' } = process.env;
 const app = express();
@@ -24,10 +25,10 @@ app.post('/signin', loginValidator, login);
 app.post('/signup', createUserValidator, createUser);
 app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardRouter);
+app.use('*', notFoundRoute);
 app.use(errorLogger);
 app.use(errors());
 app.use(errorsMiddleware);
-app.use('*', (req, res) => { res.status(404).send('Страница не найдена'); });
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
   console.log(BASE_PATH);
