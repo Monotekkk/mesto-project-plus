@@ -4,6 +4,7 @@ import {
 import bcrypt from 'bcryptjs';
 import { isEmail } from 'validator';
 import { isValidUrl } from '../validation/urlRegex';
+import UnAuthError from 'errors/un-auth-error';
 
 interface User {
   name: string;
@@ -54,12 +55,12 @@ const userSchema = new Schema<User>({
 userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
   return this.findOne({ email }).select('+password').then((user:User) => {
     if (!user) {
-      return Promise.reject(new Error('Неправильные почта или пароль'));
+      return Promise.reject(new UnAuthError('Неправильные почта или пароль'));
     }
 
     return bcrypt.compare(password, user.password).then((matched) => {
       if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new UnAuthError('Неправильные почта или пароль'));
       }
 
       return user;

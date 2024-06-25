@@ -1,5 +1,6 @@
 import { Joi, celebrate } from 'celebrate';
-const urlRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/i;
+import { urlRegex } from './urlRegex';
+
 export const loginValidator = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),

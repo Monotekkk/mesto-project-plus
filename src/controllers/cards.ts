@@ -17,6 +17,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
+      next(err);
     });
 };
 
@@ -33,12 +34,12 @@ export const deleteCards = (req: Request, res: Response, next: NextFunction) => 
     .then((card) => {
       if (!card) return next(new NotFoundError('Карточка с указанным _id не найдена'));
       if (card.owner.toString() !== res.locals.user._id) return next(new ForbiddenError('Можно удалять только собственные карточки'))
-      card.remove()
-        .then(() => res.send(card));
+      card.remove();
     })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные'));
-      if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
+      return next(err);
     });
 };
 export const likeCard = (req: Request, res: Response, next: NextFunction) => {

@@ -38,6 +38,7 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     }).catch((err) => {
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
       if (err.code === 11000) return next(new ConflictError('Такой пользователь уже существует'));
+      return next(err);
     });
 };
 export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
@@ -64,7 +65,6 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') return next(new BadRequestError('Ошибка 400: Переданы некорректные данные при обновлении профиля'));
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
       return next(err);
     });

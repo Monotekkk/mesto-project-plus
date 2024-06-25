@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { isValidUrl } from '../validation/urlRegex';
 
 interface Card {
   name: string;
@@ -14,6 +15,10 @@ const cardSchema = new mongoose.Schema<Card>({
     required: true,
     minlength: 2,
     maxlength: 30,
+    validate: {
+      validator:(url:string) => isValidUrl(url),
+      message: 'Ссылка не удовлетворяет условию'
+    }
   },
   link: {
     type: String,
