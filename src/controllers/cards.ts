@@ -35,6 +35,7 @@ export const deleteCards = (req: Request, res: Response, next: NextFunction) => 
       if (!card) return next(new NotFoundError('Карточка с указанным _id не найдена'));
       if (card.owner.toString() !== res.locals.user._id) return next(new ForbiddenError('Можно удалять только собственные карточки'))
       card.remove();
+      return
     })
     .then((card) => res.send(card))
     .catch((err) => {

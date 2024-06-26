@@ -84,7 +84,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
         httpOnly: true,
         sameSite: 'strict',
       });
-      res.status(201).send({ success: 'true' });
+      res.status(200).send({ success: 'true' });
     })
     .catch((err) => {
       return next(err);

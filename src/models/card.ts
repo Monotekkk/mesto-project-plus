@@ -15,14 +15,14 @@ const cardSchema = new mongoose.Schema<Card>({
     required: true,
     minlength: 2,
     maxlength: 30,
-    validate: {
-      validator:(url:string) => isValidUrl(url),
-      message: 'Ссылка не удовлетворяет условию'
-    }
   },
   link: {
     type: String,
     required: true,
+    validate: {
+      validator:(url:string) => isValidUrl(url),
+      message: 'Ссылка не удовлетворяет условию'
+    }
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
